@@ -9,14 +9,17 @@ class DrawBot:
         self.port = port
         self.ser = serial.Serial(port, baud)  # open serial port
         self.p = compile("G{code} X{x} Y{y}")
-    def draw(self,file_name):
+    def drawFromFile(self, file_name):
+        file = open(file_name)
+        self.draw(file)
+        file.close()
+    def draw(self,gcode):
         x = np.zeros(2)
         self.raisepen()
-        file = open(file_name)
 
         #print self.ser.readline()
 
-        for line in file:
+        for line in gcode:
             print line
             if line[0:2] == "G1":
                 command = self.p.parse(line)
