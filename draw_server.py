@@ -1,29 +1,23 @@
 from draw import DrawBot
 import sys
-#from flask import Flask
-#from flask import render_template
+from flask import Flask
+from flask import request
+from flask import render_template
 import threading
 import time
+
+app = Flask(__name__)
 
 bot = DrawBot("/dev/ttyUSB0")
 
 
+@app.route("/")
+def hello():
+	return '<form action="/draw" method="GET"><textarea name="gcode"></textarea><input type="submit" value="Draw"></form>'
 
-filename = sys.argv[1]
-gcode = '''
-G90
+@app.route("/draw")
+def draw():
+    bot.draw(request.args.get('gcode','').split('\r\n'))
+    return '<h1>done</h1>'
 
-G21
-
-G1 F3000
-
-G1 X0.5702 Y0.5702
-
-G1 X0 Y0
-
-G1 X0.5 Y0.5
-'''
-
-
-bot.draw(gcode.split('\n'))
-#bot.drawFromFile(filename)
+app.run()
