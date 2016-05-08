@@ -20,4 +20,4 @@ def draw():
     bot.draw(request.args.get('gcode','').split('\r\n'))
     return '<h1>done</h1>'
 
-app.run()
+app.run(host="0.0.0.0", port=5000)
