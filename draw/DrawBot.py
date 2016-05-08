@@ -17,12 +17,13 @@ class DrawBot:
         x = np.zeros(2)
         self.raisepen()
 
-        #print self.ser.readline()
+        print self.ser.readline()
 
         for line in gcode:
             print line
             if line[0:2] == "G1":
-                command = self.p.parse(line)
+		command = self.p.parse(line)
+		print command
                 if command != None:
                     command = command.named
                     x = np.array([float(command['x']),float(command['y'])])
