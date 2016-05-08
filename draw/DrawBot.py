@@ -3,10 +3,14 @@ import time
 from parse import compile
 import sys
 import serial
+import serial.tools.list_ports
 
 class DrawBot:
-    def __init__(self, port, baud = 38400):
-        self.port = port
+    def __init__(self, port=None, baud = 38400):
+        if port:
+            self.port = port
+        else:
+            self.port = serial.toosl.list_ports.comports()[0][0]
         self.ser = serial.Serial(port, baud)  # open serial port
         self.p = compile("G{code} X{x} Y{y}")
     def drawFromFile(self, file_name):
@@ -16,9 +20,10 @@ class DrawBot:
     def draw(self,gcode):
         x = np.zeros(2)
         self.raisepen()
-
+        
+        self.ser.timeout=0.5
         print self.ser.readline()
-
+        self.ser.timeout =0.
         for line in gcode:
             print line
             if line[0:2] == "G1":
