@@ -3,7 +3,7 @@ from parse import compile
 p = compile("G{code} X{x} Y{y}")
 import sys
 import serial
-port =  '/dev/cu.wch ch341 USB=>RS232 1410'#'tty.wch'#'cu.wch ch341 USB=>RS232 1410'
+port =  '/dev/ttyUSB0'#'tty.wch'#'cu.wch ch341 USB=>RS232 1410'
 ser = serial.Serial(port,38400)  # open serial port
 print(ser.name)         # check which port was really used
 import numpy as np
