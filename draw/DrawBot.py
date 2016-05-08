@@ -16,8 +16,9 @@ class DrawBot:
     def draw(self,gcode):
         x = np.zeros(2)
         self.raisepen()
-
+        self.ser.timeout = .5
         print self.ser.readline()
+        self.ser.timeout = 0.
 
         for line in gcode:
             print line

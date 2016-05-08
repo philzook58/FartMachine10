@@ -17,7 +17,9 @@ def hello():
 
 @app.route("/draw")
 def draw():
+	print "yo"
     bot.draw(request.args.get('gcode','').split('\r\n'))
-    return '<h1>done</h1>'
+	print "babe"
+	return '<h1>done</h1>'
 
 app.run(host="0.0.0.0", port=5000)

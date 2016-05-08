@@ -5,6 +5,9 @@ int sign = 1;
 #include <AccelStepper.h>
 #include <MultiStepper.h>
 #include <Servo.h>
+#define SERVOPIN 3
+#define TOUCHDOWN_PIN 9
+
 // write a,b for steppers
 AccelStepper stepper1(AccelStepper::FULL4WIRE, 4, 5, 6, 7);
 AccelStepper stepper2(AccelStepper::FULL4WIRE, 10, 11, 12, 13);
@@ -22,10 +25,11 @@ void setup() {
     Serial.print("LET'S PRINT BABAAAAH!\n"); //This is important for some reason?
     stepper1.setMaxSpeed(100);
     stepper2.setMaxSpeed(100);
-    myservo.attach(3);
+    myservo.attach(SERVOPIN);
       // Then give them to MultiStepper to manage
     steppers.addStepper(stepper1);
     steppers.addStepper(stepper2);
+    pinMode(TOUCHDOWN_PIN, INPUT_PULLUP);
 }
 
 void loop() {
@@ -65,6 +69,10 @@ void loop() {
         stepper2.setCurrentPosition(0);
         resetV();
         break;
+      case 'h':
+        touchdown();
+        resetV();
+        break;
       
       case 'x': // Execute action
          steppers.moveTo(positions);
@@ -84,6 +92,21 @@ void loop() {
 void resetV() {
   sign = 1;
   v = 0;
+}
+
+
+void touchdown(){
+   int angle = 90;
+    myservo.write(angle);
+    delay(10); 
+  while(digitalRead(TOUCHDOWN_PIN) == 1){
+    angle--; 
+    myservo.write(angle);
+    delay(50); 
+    Serial.println(digitalRead(TOUCHDOWN_PIN));
+  }
+  Serial.println(angle);
+  myservo.write(90);
 }
 
 void move(char ch, int steps, int sign) {
