@@ -99,11 +99,11 @@ void touchdown(){
    int angle = 90;
     myservo.write(angle);
     delay(10); 
-  while(digitalRead(TOUCHDOWN_PIN) == 1){
+  while(digitalRead(TOUCHDOWN_PIN) == 1 && angle > 0){
     angle--; 
     myservo.write(angle);
     delay(50); 
-    Serial.println(digitalRead(TOUCHDOWN_PIN));
+    //Serial.println(digitalRead(TOUCHDOWN_PIN));
   }
   Serial.println(angle);
   myservo.write(90);

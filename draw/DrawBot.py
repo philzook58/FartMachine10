@@ -6,13 +6,17 @@ import serial
 import serial.tools.list_ports
 
 class DrawBot:
-    def __init__(self, port=None, baud = 38400):
+    def __init__(self, port=None, baud=38400):
         if port:
             self.port = port
         else:
-            self.port = serial.toosl.list_ports.comports()[0][0]
-        self.ser = serial.Serial(port, baud)  # open serial port
+            self.port = serial.tools.list_ports.comports()[-1][0]
+        self.ser = serial.Serial(self.port, baud)  # open serial port
         self.p = compile("G{code} X{x} Y{y}")
+        print self.ser.readline()
+        self.offset = 0
+
+        self.homepen()
     def drawFromFile(self, file_name):
         file = open(file_name)
         self.draw(file)
@@ -25,6 +29,7 @@ class DrawBot:
         self.ser.timeout=0.5
         print self.ser.readline()
         self.ser.timeout =0.
+
         for line in gcode:
             print line
             if line[0:2] == "G1":
@@ -42,9 +47,16 @@ class DrawBot:
     def __del__(self):
         self.ser.close()
     def raisepen(self):
-        self.ser.write('50c')
+        self.ser.write(str(self.penAngle + 10 + self.offset) + 'c')
+        print str(self.penAngle + self.offset + 10)
     def lowerpen(self):
-        self.ser.write('40c')
+        self.ser.write(str(self.penAngle + self.offset) + 'c')
+        print str(self.penAngle + self.offset)
+    def homepen(self):
+        self.ser.write('h');
+        self.penAngle = int(self.ser.readline())
+    def reset(self):
+        self.ser.write('r');
     def move(self,steps):
         self.ser.write(str(int(steps[0])) + b'a')
         self.ser.write(str(int(steps[1])) + b'b')

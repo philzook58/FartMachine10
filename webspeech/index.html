@@ -1,0 +1,57 @@
+<html>
+<head>
+<script>
+
+var recognition = {};
+function start(){
+
+  //var msg = new SpeechSynthesisUtterance('Hello World');
+    //window.speechSynthesis.speak(msg);
+    if (!('webkitSpeechRecognition' in window)) {
+  console.log("NOt found")
+}
+  recognition = new webkitSpeechRecognition();
+  //recognition.continuous = true;
+  //recognition.interimResults = true;
+  console.log("init");
+  recognition.onresult = function(event) {
+  console.log(event)
+  console.log(event.results[0][0].transcript);
+  }
+
+  recognition.onerror = function(event) { console.log(event)}
+  recognition.onstart = function() {
+   recognizing = true;
+   console.log("starting")
+ };
+  //recognition.start();
+
+}
+
+
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
+var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
+var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+
+var recognition = new SpeechRecognition();
+var speechRecognitionList = new SpeechGrammarList();
+
+
+function buttonclick(){
+  recognition.start();
+
+
+}
+
+</script>
+
+</head>
+
+<body onload="start()">
+
+<button onclick="buttonclick()"> Click to talk</button>
+
+</body>
+
+
+</html>
