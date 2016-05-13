@@ -4,10 +4,16 @@ import numpy as np
 
 class PhotoConverter:
 
-    def __init__(self):
-        self.cap = cv2.VideoCapture(0)
+    def __init__(self):  
         self.fraction = 16 # 1/fraction largest area contours are drawn
-        _, frame = self.cap.read() #get the camera juicin'
+        self.openCamera()
+
+
+    def openCamera(self):
+        self.cap = cv2.VideoCapture(0)
+        _, frame = self.cap.read() 
+    def closeCamera(self):
+        self.cap.release()
 
 
     def takePhoto(self):
@@ -18,14 +24,13 @@ class PhotoConverter:
         gray = cv2.pyrDown(gray)
         self.thres = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,15,2)
         self.contours,self.hierarchy = cv2.findContours(self.thres,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-        
         #Order contours by area
         i=0
         area = np.zeros(len(self.contours))
         for cnt in self.contours:
             area[i] = cv2.contourArea(cnt)
             i=i+1
-            self.indexorder = np.argsort(area)[::-1]
+        self.indexorder = np.argsort(area)[::-1]
 
     def drawContours(self):
         newempty = np.ones((self.thres.shape[0],self.thres.shape[1],3), dtype=np.uint8)
@@ -37,14 +42,16 @@ class PhotoConverter:
         cv2.destroyAllWindows()
 
     def convertContourstoGcode(self):
-        raisepen = "M05\n"
-        lowerpen = "M03\n"
+        raisepen = "M05\r\n"
+        lowerpen = "M03\r\n"
         def move(x,y):
-            return "G1 X" + str(x) + " Y" + str(y) + "\n" 
+            return "G1 X" + str(x) + " Y" + str(y) + "\r\n" 
 
         gcode = ""
-        for cnt in self.contours: #format of contour is [ [[x y]], [[x,y]] ] Why they put double array in there god knows
-            gcode += raisepen
+        #for cnt in self.contours[self.indexorder]: #format of contour is [ [[x y]], [[x,y]] ] Why they put double array in there god knows
+        for i in range(int(len(self.indexorder)/self.fraction)):
+            cnt = self.contours[self.indexorder[i]]
+            gcode += raisepen   # Also dule note that i needed to convert contours to numpy array to index like this
             gcode += move(cnt[0][0][0],cnt[0][0][1])
             gcode += lowerpen
             for point in cnt:

@@ -4,6 +4,9 @@ from parse import compile
 import sys
 import serial
 import serial.tools.list_ports
+import threading
+
+#Full Range of x is 1600, y is 1200
 
 class DrawBot:
     def __init__(self, port=None, baud=38400):
@@ -15,12 +18,29 @@ class DrawBot:
         self.p = compile("G{code} X{x} Y{y}")
         print self.ser.readline()
         self.offset = 0
-
+        self.busy = False
         self.homepen()
+        self.stop = False
+
+    #Checks if busy, spins off a thread if not that will set busy to false when done
+    def busyCheck(func):
+        def func_wrapper(self,*args, **kwargs): 
+            if not self.busy:
+                self.busy = True
+                def func_wrapper2(*args, **kwargs): 
+                    func(self,*args, **kwargs)
+                    self.busy = False
+                threading.Thread(target=func_wrapper2, args=args, kwargs=kwargs).start()
+            else:
+                print "busy"
+        return func_wrapper
+
     def drawFromFile(self, file_name):
         file = open(file_name)
         self.draw(file)
         file.close()
+
+    @busyCheck
     def draw(self,gcode):
         x = np.zeros(2)
         self.raisepen()
@@ -33,8 +53,8 @@ class DrawBot:
         for line in gcode:
             print line
             if line[0:2] == "G1":
-		command = self.p.parse(line)
-		print command
+                command = self.p.parse(line)
+                print command
                 if command != None:
                     command = command.named
                     x = np.array([float(command['x']),float(command['y'])])
@@ -44,6 +64,11 @@ class DrawBot:
                 self.raisepen()
             elif line[0:3] == "M03":
                 self.lowerpen()
+            if self.stop:
+                print "Bird Stopped"
+                self.stop = False
+                return "Bird. You Stopped"
+        return "bird"
     def __del__(self):
         self.ser.close()
     def raisepen(self):
@@ -55,6 +80,8 @@ class DrawBot:
     def homepen(self):
         self.ser.write('h');
         self.penAngle = int(self.ser.readline())
+    def setStop(self, val):
+        self.stop = val
     def reset(self):
         self.ser.write('r');
     def move(self,steps):
@@ -68,4 +95,9 @@ class DrawBot:
         self.ser.write(str(int(x[0])) + b'a')
         self.ser.write(str(int(x[1])) + b'b')
         self.ser.write(b'x')
-        print self.ser.readline()
+        while self.ser.readline() != "Ready\n":
+            #self.ser.write(str(int(x[0])) + b'a')
+            #self.ser.write(str(int(x[1])) + b'b')
+            #self.ser.write(b'x')
+            time.sleep(0.05)
+       

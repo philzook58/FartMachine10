@@ -7,7 +7,7 @@ import threading
 import time
 from photo import PhotoConverter
 app = Flask(__name__)
-app.debug = True
+#app.debug = True
 bot = DrawBot()
 
 
@@ -19,12 +19,12 @@ def hello():
 
 @app.route('/')
 def root():
-    return app.send_static_file('index.html')
+	return app.send_static_file('index.html')
 
 '''
 @app.route('/js/<path:path>')
 def send_js(path):
-    return send_from_directory('js', path)
+	return send_from_directory('js', path)
 '''
 
 @app.route("/home")
@@ -43,8 +43,8 @@ def draw():
 def photo():
 	photo = PhotoConverter()
 	photo.takePhoto()
-	gcode = photo.convertContourstoGcode()
-	#print gcode
+	gcode = photo.convertContourstoGcode().split('\r\n')
+	photo.closeCamera()
 	bot.draw(gcode)
 	return '<h1>done</h1>' 
 
@@ -60,15 +60,21 @@ def set_offset(offset):
 
 @app.route('/move', methods=['GET', 'POST'])
 def move():
-    if request.method == 'POST':
-        bot.move_to(int(request.form['x']), int(request.form['y']))
-    return '<form action="/move" method="POST"> x<input type="text" name="x"><br>y <input type="text" name="y"> <br><input type="submit" value="Move"></form>'
+	if request.method == 'POST':
+		bot.move_to( [int(request.form['x']), int(request.form['y'])] )
+	return '<form action="/move" method="POST"> x<input type="text" name="x"><br>y <input type="text" name="y"> <br><input type="submit" value="Move"></form>'
 
 
 @app.route('/reset')
 def reset():
 	bot.reset()
 	return '<h1>done</h1>' 
+
+@app.route('/stop')
+def stop():
+	bot.setStop(True)
+	return '<h1>done</h1>' 
+
 
 
 
