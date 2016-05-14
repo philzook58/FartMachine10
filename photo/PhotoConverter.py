@@ -41,6 +41,13 @@ class PhotoConverter:
         k = cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+    def saveContour(self, filename):
+        newempty = np.ones((self.thres.shape[0],self.thres.shape[1],3), dtype=np.uint8)
+        for i in range(int(len(self.indexorder)/self.fraction)):
+            cv2.drawContours(newempty, self.contours, self.indexorder[i], (0,0,255), 1)
+        cv2.imwrite(filename, newempty)
+
+
     def convertContourstoGcode(self):
         raisepen = "M05\r\n"
         lowerpen = "M03\r\n"
