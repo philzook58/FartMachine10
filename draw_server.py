@@ -26,7 +26,7 @@ def contour():
 	return app.send_static_file('contour.jpg')
 
 @app.route('/frame')
-def contour():
+def frame():
 	return app.send_static_file('frame.jpg')
 
 '''
