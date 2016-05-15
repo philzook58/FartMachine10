@@ -78,11 +78,13 @@ function home() {
   });
 }
 
-function gcode (){
+function gcode() {
+  console.log($('#gcode').val())
+
     $.ajax({
         url:'/draw',
         type:'GET',
-        data: $('#gcode').text(),
+        data: {gcode:$('#gcode').val()},
         success: function(response) {
             console.log(response);
         },
@@ -90,6 +92,7 @@ function gcode (){
             console.log(error);
         }
     });
+
 }
 
 function reset() {
