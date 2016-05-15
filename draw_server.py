@@ -8,7 +8,7 @@ import time
 import json
 from photo import PhotoConverter
 app = Flask(__name__)
-app.debug = True
+#app.debug = True
 bot = DrawBot()
 #bot = False
 gcode = ""
@@ -40,7 +40,7 @@ def send_js(path):
 
 @app.route("/home")
 def home():
-	#bot.homepen()
+	bot.homepen()
 	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 
@@ -65,6 +65,7 @@ def photo():
 def takePhoto():
 	photo = PhotoConverter()
 	photo.takePhoto()
+	global gcode
 	gcode = photo.convertContourstoGcode().split('\r\n')
 	photo.closeCamera()
 	photo.saveContour('static/contour.jpg')
@@ -73,6 +74,7 @@ def takePhoto():
 
 @app.route("/drawphoto")
 def drawPhoto():
+	print gcode
 	bot.draw(gcode)
 	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
