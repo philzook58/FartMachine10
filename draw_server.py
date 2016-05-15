@@ -19,7 +19,7 @@ def hello():
 
 @app.route('/')
 def root():
-	return app.send_static_file('index.html')
+	return app.render_template('index.html')
 
 @app.route('/contour')
 def contour():
@@ -56,7 +56,23 @@ def photo():
 	photo.saveContour('static/contour.jpg')
 	photo.saveFrame('static/frame.jpg')
 	bot.draw(gcode)
-	return '<h1>done</h1>' 
+	return '<h1>done</h1>'
+
+@app.route("/takephoto")
+def takePhoto():
+	photo = PhotoConverter()
+	photo.takePhoto()
+	photo.closeCamera()
+	photo.saveFrame('static/frame.jpg')
+	json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+
+@app.route("/takephoto")
+def takePhoto():
+	photo = PhotoConverter()
+	photo.takePhoto()
+	photo.closeCamera()
+	photo.saveFrame('static/frame.jpg')
+	json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 '''
 
@@ -78,12 +94,12 @@ def move():
 @app.route('/reset')
 def reset():
 	bot.reset()
-	return '<h1>done</h1>' 
+	return '<h1>done</h1>'
 
 @app.route('/stop')
 def stop():
 	bot.setStop(True)
-	return '<h1>done</h1>' 
+	return '<h1>done</h1>'
 
 
 

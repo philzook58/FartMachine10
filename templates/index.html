@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>Your page title here :)</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+  <!-- Jquery
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+
+</head>
+<body>
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="container">
+    <div class="row">
+      <div class="one-half column" style="margin-top: 25%">
+        <h4>DrawBot Control Page</h4>
+      </div>
+    </div>
+    <div class="row">
+      <div class="two columns">
+        <button onclick='home'> Home </button>
+      </div>
+      <div class="three columns">
+        <form action="/draw" method="GET">
+          <textarea placeholder="Type GCode Here" name="gcode" style="resize:vertical"></textarea>
+          <input type="submit" value="Draw">
+        </form>
+      </div>
+      <div class="three columns">
+        <button onclick="photo"> Take Photo</button>
+        <img src="images/placeholder.png" id="photo" width=100%></img>
+        <button onclick="drawPhoto"> Draw Photo</button>
+      </div>
+    </div>
+  </div>
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+
+<script>
+function home() {
+  $.ajax({
+    url: '/home',
+    type: 'GET',
+    success: function(response) {
+        console.log(response);
+    },
+    error: function(error) {
+        console.log(error);
+    }
+  });
+}
+
+function takePhoto() {
+  $.ajax({
+    url: '/takephoto',
+    type: 'GET',
+    success: function(response) {
+        $(".photo").attr("src","/frame")
+    },
+    error: function(error) {
+        console.log(error);
+    }
+  });
+}
+
+
+</script>
+</html>

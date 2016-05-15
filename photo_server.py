@@ -13,6 +13,10 @@ app.debug = True
 
 #bot = DrawBot("/dev/ttyUSB0")
 
+from OpenSSL import SSL
+context = SSL.Context(SSL.SSLv23_METHOD)
+context.use_privatekey_file('server.key')
+context.use_certificate_file('server.crt')
 
 @app.route("/")
 def hello():
@@ -37,4 +41,4 @@ def image():
 	g.close()
 	return '<h1>done</h1>'
 
-app.run()
+app.run(host='0.0.0.0', ssl_context=context)
