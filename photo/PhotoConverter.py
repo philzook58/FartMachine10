@@ -19,6 +19,7 @@ class PhotoConverter:
     def takePhoto(self):
         #Take photo, convert to gray, downsample, threshold, find contours
         _, frame = self.cap.read()
+        self.frame = frame
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray = self.findFace(gray)
         gray = cv2.pyrDown(gray)
@@ -46,6 +47,10 @@ class PhotoConverter:
         for i in range(int(len(self.indexorder)/self.fraction)):
             cv2.drawContours(newempty, self.contours, self.indexorder[i], (0,0,255), 1)
         cv2.imwrite(filename, newempty)
+
+    def saveFrame(self,filename):
+        cv2.imwrite(filename, frame)
+
 
 
     def convertContourstoGcode(self):

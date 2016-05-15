@@ -25,6 +25,10 @@ def root():
 def contour():
 	return app.send_static_file('contour.jpg')
 
+@app.route('/frame')
+def contour():
+	return app.send_static_file('frame.jpg')
+
 '''
 @app.route('/js/<path:path>')
 def send_js(path):
@@ -50,6 +54,7 @@ def photo():
 	gcode = photo.convertContourstoGcode().split('\r\n')
 	photo.closeCamera()
 	photo.saveContour('static/contour.jpg')
+	photo.saveFrame('static/frame.jpg')
 	bot.draw(gcode)
 	return '<h1>done</h1>' 
 
