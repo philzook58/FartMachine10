@@ -48,7 +48,7 @@
         <button onclick='stop()'> Reset </button>
       </div>
       <div class="three columns">
-        <form action="/draw" method="GET">
+        <form id="gcode" onsubmit="gcode()" method="GET">
           <textarea placeholder="Type GCode Here" name="gcode" style="resize:vertical"></textarea>
           <input type="submit" value="Draw">
         </form>
@@ -78,6 +78,20 @@ function home() {
         console.log(error);
     }
   });
+}
+
+function gcode (){
+    $.ajax({
+        url:'/gcode',
+        type:'post',
+        data:$('#gcode').serialize(),
+        success: function(response) {
+            console.log(response);
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
 }
 
 function reset() {
