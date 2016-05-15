@@ -49,7 +49,7 @@ class PhotoConverter:
         cv2.imwrite(filename, newempty)
 
     def saveFrame(self,filename):
-        cv2.imwrite(filename, frame)
+        cv2.imwrite(filename, self.frame)
 
 
 
