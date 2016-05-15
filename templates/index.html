@@ -45,13 +45,11 @@
       <div class="two columns">
         <button onclick='home()'> Home </button>
         <button onclick='reset()'> Reset </button>
-        <button onclick='stop()'> Reset </button>
+        <button onclick='stop()'> Stop </button>
       </div>
       <div class="three columns">
-        <form id="gcode" onsubmit="gcode()" method="GET">
-          <textarea placeholder="Type GCode Here" name="gcode" style="resize:vertical"></textarea>
-          <input type="submit" value="Draw">
-        </form>
+        <textarea placeholder="Type GCode Here" id="gcode" style="resize:vertical"></textarea>
+        <button onclick="gcode()">Draw </button>
       </div>
       <div class="three columns">
         <button onclick="takePhoto()"> Take Photo</button>
@@ -82,9 +80,9 @@ function home() {
 
 function gcode (){
     $.ajax({
-        url:'/gcode',
-        type:'post',
-        data:$('#gcode').serialize(),
+        url:'/draw',
+        type:'GET',
+        data: $('#gcode').text(),
         success: function(response) {
             console.log(response);
         },
