@@ -14,6 +14,7 @@ class DrawBot:
             self.port = port
         else:
             self.port = serial.tools.list_ports.comports()[-1][0]
+            #self.port = "/dev/ttyUSB0"
         self.ser = serial.Serial(self.port, baud)  # open serial port
         self.p = compile("G{code} X{x} Y{y}")
         print self.ser.readline()
@@ -24,10 +25,10 @@ class DrawBot:
 
     #Checks if busy, spins off a thread if not that will set busy to false when done
     def busyCheck(func):
-        def func_wrapper(self,*args, **kwargs): 
+        def func_wrapper(self,*args, **kwargs):
             if not self.busy:
                 self.busy = True
-                def func_wrapper2(*args, **kwargs): 
+                def func_wrapper2(*args, **kwargs):
                     func(self,*args, **kwargs)
                     self.busy = False
                 threading.Thread(target=func_wrapper2, args=args, kwargs=kwargs).start()
@@ -100,4 +101,3 @@ class DrawBot:
             #self.ser.write(str(int(x[1])) + b'b')
             #self.ser.write(b'x')
             time.sleep(0.05)
-       

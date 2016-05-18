@@ -4,7 +4,7 @@ import numpy as np
 
 class PhotoConverter:
 
-    def __init__(self):  
+    def __init__(self):
         self.fraction = 16 # 1/fraction largest area contours are drawn
         self.openCamera()
         self.robotFraction = 0.25 #Full Range of x is 1600, y is 1200
@@ -12,7 +12,7 @@ class PhotoConverter:
 
     def openCamera(self):
         self.cap = cv2.VideoCapture(0)
-        _, frame = self.cap.read() 
+        _, frame = self.cap.read()
     def closeCamera(self):
         self.cap.release()
 
@@ -62,7 +62,7 @@ class PhotoConverter:
         raisepen = "M05\r\n"
         lowerpen = "M03\r\n"
         def move(x,y):
-            return "G1 X" + str(x) + " Y" + str(y) + "\r\n" 
+            return "G1 X" + str(x) + " Y" + str(y) + "\r\n"
 
         gcode = ""
         #for cnt in self.contours[self.indexorder]: #format of contour is [ [[x y]], [[x,y]] ] Why they put double array in there god knows
@@ -89,7 +89,7 @@ class PhotoConverter:
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
         if faces: #Perhaps a better approach would be to blur using faces as crispness points? Might want mutiple faces
             faces = sorted(faces, key = lambda (x,y,w,h): w * h, reverse=True) #Also sort for largest faces rather than arbitrary face
-            (x,y,w,h) = faces[0] 
+            (x,y,w,h) = faces[0]
             left = max(x-w/2,0)
             right = min(x+3*w/2,gray.shape[1])
             down = min(y+3*h/2,gray.shape[0])
@@ -97,10 +97,3 @@ class PhotoConverter:
             return gray[up:down, left:right] #Yes. The coordinate system of computers is goofy.
         else:
             return gray
-
-
-
-
-
-
-

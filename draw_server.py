@@ -5,10 +5,13 @@ from flask import request
 from flask import render_template
 import threading
 import time
+import json
 from photo import PhotoConverter
 app = Flask(__name__)
 #app.debug = True
 bot = DrawBot()
+#bot = False
+gcode = ""
 
 
 
@@ -19,7 +22,7 @@ def hello():
 
 @app.route('/')
 def root():
-	return app.send_static_file('index.html')
+	return render_template('index.html')
 
 @app.route('/contour')
 def contour():
@@ -38,14 +41,14 @@ def send_js(path):
 @app.route("/home")
 def home():
 	bot.homepen()
-	return '<h1>done</h1>'
+	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 
 
 @app.route("/draw")
 def draw():
 	bot.draw(request.args.get('gcode','').split('\r\n'))
-	return '<h1>done</h1>'
+	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 @app.route("/photo")
 def photo():
@@ -56,7 +59,24 @@ def photo():
 	photo.saveContour('static/contour.jpg')
 	photo.saveFrame('static/frame.jpg')
 	bot.draw(gcode)
-	return '<h1>done</h1>' 
+	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+
+@app.route("/takephoto")
+def takePhoto():
+	photo = PhotoConverter()
+	photo.takePhoto()
+	global gcode
+	gcode = photo.convertContourstoGcode().split('\r\n')
+	photo.closeCamera()
+	photo.saveContour('static/contour.jpg')
+	photo.saveFrame('static/frame.jpg')
+	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+
+@app.route("/drawphoto")
+def drawPhoto():
+	print gcode
+	bot.draw(gcode)
+	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 '''
 
@@ -78,12 +98,12 @@ def move():
 @app.route('/reset')
 def reset():
 	bot.reset()
-	return '<h1>done</h1>' 
+	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 @app.route('/stop')
 def stop():
 	bot.setStop(True)
-	return '<h1>done</h1>' 
+	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 
 
