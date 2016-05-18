@@ -7,6 +7,7 @@ class PhotoConverter:
     def __init__(self):  
         self.fraction = 16 # 1/fraction largest area contours are drawn
         self.openCamera()
+        self.robotFraction = 0.25 #Full Range of x is 1600, y is 1200
 
 
     def openCamera(self):
@@ -47,6 +48,10 @@ class PhotoConverter:
         for i in range(int(len(self.indexorder)/self.fraction)):
             cv2.drawContours(newempty, self.contours, self.indexorder[i], (0,0,255), 1)
         cv2.imwrite(filename, newempty)
+
+    def scaleContours(self):
+        pass
+
 
     def saveFrame(self,filename):
         cv2.imwrite(filename, self.frame)
