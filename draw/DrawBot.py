@@ -15,13 +15,14 @@ class DrawBot:
         else:
             self.port = serial.tools.list_ports.comports()[-1][0]
             #self.port = "/dev/ttyUSB0"
-        self.ser = serial.Serial(self.port, baud)  # open serial port
+        self.ser = serial.Serial(self.port, baud,timeout=10.)  # open serial port
         self.p = compile("G{code} X{x} Y{y}")
         print self.ser.readline()
         self.offset = 0
         self.busy = False
         self.homepen()
         self.stop = False
+        ser.reset_input_buffer()
 
     #Checks if busy, spins off a thread if not that will set busy to false when done
     def busyCheck(func):
@@ -43,13 +44,15 @@ class DrawBot:
 
     @busyCheck
     def draw(self,gcode):
+        ser.reset_input_buffer()
         x = np.zeros(2)
         self.raisepen()
 
 
-        self.ser.timeout=0.5
-        print self.ser.readline()
-        self.ser.timeout =0.
+        #self.ser.timeout=0.5
+        #print self.ser.readline()
+        #self.ser.timeout =0.
+        ser.reset_input_buffer()
 
         for line in gcode:
             print line
@@ -68,6 +71,7 @@ class DrawBot:
             if self.stop:
                 print "Bird Stopped"
                 self.stop = False
+                ser.reset_input_buffer()
                 return "Bird. You Stopped"
         return "bird"
     def __del__(self):
@@ -79,25 +83,29 @@ class DrawBot:
         self.ser.write(str(self.penAngle + self.offset) + 'c')
         print str(self.penAngle + self.offset)
     def homepen(self):
+        ser.reset_input_buffer()
         self.ser.write('h');
         self.penAngle = int(self.ser.readline())
     def setStop(self, val):
         self.stop = val
     def reset(self):
+        ser.reset_input_buffer()
         self.ser.write('r');
-    def move(self,steps):
+    def move(self,steps): #DO NOT USE
         self.ser.write(str(int(steps[0])) + b'a')
         self.ser.write(str(int(steps[1])) + b'b')
         self.ser.write(b'x')
     def convertToMotor(self,x):
         return np.array([x[0]+x[1],x[0]-x[1]])/np.sqrt(2)
     def move_to(self,x):
+        ser.reset_input_buffer()
         x = self.convertToMotor(x)
         self.ser.write(str(int(x[0])) + b'a')
         self.ser.write(str(int(x[1])) + b'b')
         self.ser.write(b'x')
-        while self.ser.readline() != "Ready\n":
+        print self.ser.readline()
+        #while self.ser.readline() != "Ready\n":
             #self.ser.write(str(int(x[0])) + b'a')
             #self.ser.write(str(int(x[1])) + b'b')
             #self.ser.write(b'x')
-            time.sleep(0.05)
+        #    time.sleep(0.05)
