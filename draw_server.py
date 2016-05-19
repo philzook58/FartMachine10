@@ -58,8 +58,13 @@ def photo():
 	photo.closeCamera()
 	photo.saveContour('static/contour.jpg')
 	photo.saveFrame('static/frame.jpg')
-	bot.draw(gcode)
-	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+	photo.sortContours()
+	photo.scaleContours(1500,1100)
+	status = bot.draw(gcode)
+	if status == "busy":
+		return json.dumps({'success':False}), 200, {'ContentType':'application/json'}
+	else:
+		return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 @app.route("/takephoto")
 def takePhoto():
@@ -70,6 +75,8 @@ def takePhoto():
 	photo.closeCamera()
 	photo.saveContour('static/contour.jpg')
 	photo.saveFrame('static/frame.jpg')
+	photo.sortContours()
+	photo.scaleContours(1500,1100)
 	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 @app.route("/drawphoto")
