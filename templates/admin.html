@@ -38,17 +38,23 @@
   <div class="container">
     <div class="row">
       <div class="one-half column" style="margin-top: 25%">
-        <h4>DrawBot</h4>
+        <h4>DrawBot Control Page</h4>
       </div>
     </div>
     <div class="row">
-
-      <div class="three columns">
-        <button onclick="takePhoto()"> Take Photo</button>
-        <button onclick="drawPhoto()"> Draw Photo</button>
+      <div class="two columns">
+        <button onclick='home()'> Home </button>
+        <button onclick='reset()'> Reset </button>
+        <button onclick='stop()'> Stop </button>
       </div>
       <div class="three columns">
+        <textarea placeholder="Type GCode Here" id="gcode" style="resize:vertical"></textarea>
+        <button onclick="gcode()">Draw </button>
+      </div>
+      <div class="three columns">
+        <button onclick="takePhoto()"> Take Photo</button>
         <img src="static/placeholder.png" id="photo" width=100%></img>
+        <button onclick="drawPhoto()"> Draw Photo</button>
       </div>
     </div>
   </div>
@@ -58,6 +64,50 @@
 </body>
 
 <script>
+function home() {
+  console.log("home")
+  $.ajax({
+    url: '/home',
+    type: 'GET',
+    success: function(response) {
+        console.log(response);
+    },
+    error: function(error) {
+        console.log(error);
+    }
+  });
+}
+
+function gcode() {
+  console.log($('#gcode').val())
+
+    $.ajax({
+        url:'/draw',
+        type:'GET',
+        data: {gcode:$('#gcode').val()},
+        success: function(response) {
+            console.log(response);
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
+
+}
+
+function reset() {
+  console.log("reset")
+  $.ajax({
+    url: '/reset',
+    type: 'GET',
+    success: function(response) {
+        console.log(response);
+    },
+    error: function(error) {
+        console.log(error);
+    }
+  });
+}
 
 function stop() {
   console.log("stop")

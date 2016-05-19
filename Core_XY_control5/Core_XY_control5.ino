@@ -7,6 +7,8 @@ int sign = 1;
 #include <Servo.h>
 #define SERVOPIN 3
 #define TOUCHDOWN_PIN 9
+#define X_LIMIT_PIN 2
+#define Y_LIMIT_PIN 8
 
 // write a,b for steppers
 AccelStepper stepper1(AccelStepper::FULL4WIRE, 4, 5, 6, 7);
@@ -30,6 +32,8 @@ void setup() {
     steppers.addStepper(stepper1);
     steppers.addStepper(stepper2);
     pinMode(TOUCHDOWN_PIN, INPUT_PULLUP);
+    pinMode(X_LIMIT_PIN, INPUT_PULLUP);
+    pinMode(Y_LIMIT_PIN, INPUT_PULLUP);
 }
 
 void loop() {
@@ -65,15 +69,17 @@ void loop() {
          resetV();
          break;
       case 'r':
-        stepper1.setCurrentPosition(0);
-        stepper2.setCurrentPosition(0);
+        resetCoordinates();
         resetV();
         break;
       case 'h':
         touchdown();
         resetV();
         break;
-
+      case 'z':
+        homeCoords();
+        resetV();
+        break;
       case 'x': // Execute action
          steppers.moveTo(positions);
          steppers.runSpeedToPosition();
@@ -94,6 +100,36 @@ void resetV() {
   v = 0;
 }
 
+void homeCoords() {
+  Serial.println("homing");
+  bool x_home = false;
+  bool y_home = false;
+  y_home = (digitalRead(Y_LIMIT_PIN) == 0);
+  while (!y_home){
+    positions[0] -= 1;
+    positions[1] += 1;
+    steppers.moveTo(positions);
+    steppers.runSpeedToPosition();
+    y_home = (digitalRead(Y_LIMIT_PIN) == 0);
+  }
+
+
+  x_home = (digitalRead(X_LIMIT_PIN) == 0);
+  while (!x_home){
+    positions[0] -= 1;
+    positions[1] -= 1;
+    steppers.moveTo(positions);
+    steppers.runSpeedToPosition();
+    x_home = (digitalRead(X_LIMIT_PIN) == 0);
+  }
+
+  resetCoordinates();
+}
+
+void resetCoordinates() {
+  stepper1.setCurrentPosition(0);
+  stepper2.setCurrentPosition(0);
+}
 
 void touchdown(){
    int angle = 90;
