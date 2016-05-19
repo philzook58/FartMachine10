@@ -18,11 +18,13 @@ class DrawBot:
         self.ser = serial.Serial(self.port, baud,timeout=10.)  # open serial port
         self.p = compile("G{code} X{x} Y{y}")
         print self.ser.readline()
-        self.offset = 0
         self.busy = False
         self.homepen()
         self.stop = False
         ser.reset_input_buffer()
+
+        self.w = 1600
+        self.h= 1200
 
     #Checks if busy, spins off a thread if not that will set busy to false when done
     def busyCheck(func):
@@ -33,8 +35,10 @@ class DrawBot:
                     func(self,*args, **kwargs)
                     self.busy = False
                 threading.Thread(target=func_wrapper2, args=args, kwargs=kwargs).start()
+                return "printing"
             else:
                 print "busy"
+                return "busy"
         return func_wrapper
 
     def drawFromFile(self, file_name):
@@ -77,11 +81,11 @@ class DrawBot:
     def __del__(self):
         self.ser.close()
     def raisepen(self):
-        self.ser.write(str(self.penAngle + 10 + self.offset) + 'c')
-        print str(self.penAngle + self.offset + 10)
+        self.ser.write(str(self.penAngle) + 'c')
+        print str(self.penAngle)
     def lowerpen(self):
-        self.ser.write(str(self.penAngle + self.offset) + 'c')
-        print str(self.penAngle + self.offset)
+        self.ser.write(str(self.penAngle - 10) + 'c')
+        print str(self.penAngle - 10)
     def homepen(self):
         ser.reset_input_buffer()
         self.ser.write('h');
