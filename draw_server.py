@@ -71,12 +71,12 @@ def takePhoto():
 	photo = PhotoConverter()
 	photo.takePhoto()
 	global gcode
+	photo.sortContours()
+	photo.scaleContours(1500,1100)
 	gcode = photo.convertContourstoGcode().split('\r\n')
 	photo.closeCamera()
 	photo.saveContour('static/contour.jpg')
 	photo.saveFrame('static/frame.jpg')
-	photo.sortContours()
-	photo.scaleContours(1500,1100)
 	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 @app.route("/drawphoto")

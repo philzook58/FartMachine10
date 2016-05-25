@@ -21,7 +21,8 @@ class DrawBot:
         self.busy = False
         self.homepen()
         self.stop = False
-        ser.reset_input_buffer()
+        self.homexy()
+        self.ser.flushInput()
 
         self.w = 1600
         self.h= 1200
@@ -48,7 +49,7 @@ class DrawBot:
 
     @busyCheck
     def draw(self,gcode):
-        ser.reset_input_buffer()
+        self.ser.flushInput()
         x = np.zeros(2)
         self.raisepen()
 
@@ -56,7 +57,7 @@ class DrawBot:
         #self.ser.timeout=0.5
         #print self.ser.readline()
         #self.ser.timeout =0.
-        ser.reset_input_buffer()
+        self.ser.flushInput()
 
         for line in gcode:
             print line
@@ -75,7 +76,7 @@ class DrawBot:
             if self.stop:
                 print "Bird Stopped"
                 self.stop = False
-                ser.reset_input_buffer()
+                self.ser.flushInput()
                 return "Bird. You Stopped"
         return "bird"
     def __del__(self):
@@ -87,14 +88,17 @@ class DrawBot:
         self.ser.write(str(self.penAngle - 10) + 'c')
         print str(self.penAngle - 10)
     def homepen(self):
-        ser.reset_input_buffer()
+        self.ser.flushInput()
         self.ser.write('h');
         self.penAngle = int(self.ser.readline())
     def setStop(self, val):
         self.stop = val
     def reset(self):
-        ser.reset_input_buffer()
+        self.ser.flushInput()
         self.ser.write('r');
+    def homexy(self):
+        self.ser.flushInput()
+        self.ser.write('z');
     def move(self,steps): #DO NOT USE
         self.ser.write(str(int(steps[0])) + b'a')
         self.ser.write(str(int(steps[1])) + b'b')
@@ -102,7 +106,7 @@ class DrawBot:
     def convertToMotor(self,x):
         return np.array([x[0]+x[1],x[0]-x[1]])/np.sqrt(2)
     def move_to(self,x):
-        ser.reset_input_buffer()
+        self.ser.flushInput()
         x = self.convertToMotor(x)
         self.ser.write(str(int(x[0])) + b'a')
         self.ser.write(str(int(x[1])) + b'b')
