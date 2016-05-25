@@ -19,11 +19,19 @@ class PhotoConverter:
     def setDrawFraction(self, newfrac):
         self.robotFraction = newfrac
 
+    def squareFrame(self,frame):
+        if frame.shape[0] < frame.shape[1]:
+            offset = int((frame.shape[1]-frame.shape[0])/2)
+            return frame[:,offset:frame.shape[0]-offset]
+        else:
+            offset = int((frame.shape[0]-frame.shape[1])/2)
+            return frame[offset:frame.shape[1]-offset,:]
+
 
     def takePhoto(self):
         #Take photo, convert to gray, downsample, threshold, find contours
         _, frame = self.cap.read()
-        self.frame = frame
+        self.frame = self.squareFrame(frame)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         #gray = self.findFace(gray)
         gray = cv2.pyrDown(gray)
@@ -55,6 +63,7 @@ class PhotoConverter:
             cv2.drawContours(newempty, self.contours, i, (0,0,255), 1)
         cv2.imwrite(filename, newempty)
 
+    '''
     def scaleContours(self, w, h):
         xmax = 0
         ymax = 0
@@ -70,6 +79,31 @@ class PhotoConverter:
                 point = point[0]
                 point[0] = int(point[0] * scale + offsetx)
                 point[1] = int(point[1] * scale + offsety)
+        self.w = w #int(self.w * scale)
+        self.h = h #int(self.h * scale)
+        print self.contours
+    '''
+    #x = 630
+    #y = 480
+    #w = 370
+    #h = 370
+    def scaleContours(self, x=630, y=480, w=370, h=370):
+
+        
+        xmax = 0
+        ymax = 0
+        w = float(w)
+        h = float(h)
+
+        scale = min(w / self.w, h / self.h)
+        offsetx = x#(w - scale*self.w)/2
+        offsety =  y#(h - scale*self.h)/2
+
+        for cnt in self.contours:
+            for point in cnt:
+                point = point[0]
+                point[0] = int(point[0] * scale + offsetx)
+                point[1] = int((self.h-point[1]) * scale + offsety)
         self.w = w #int(self.w * scale)
         self.h = h #int(self.h * scale)
         print self.contours

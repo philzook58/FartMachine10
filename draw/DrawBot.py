@@ -15,11 +15,12 @@ class DrawBot:
         else:
             self.port = serial.tools.list_ports.comports()[-1][0]
             #self.port = "/dev/ttyUSB0"
-        self.ser = serial.Serial(self.port, baud,timeout=10.)  # open serial port
+        self.ser = serial.Serial(self.port, baud,timeout=30.)  # open serial port
         self.p = compile("G{code} X{x} Y{y}")
         print self.ser.readline()
         self.busy = False
-        self.homepen()
+        #self.homepen()
+        self.ser.write(str(150) + 'c')
         self.stop = False
         self.homexy()
         self.ser.flushInput()
@@ -51,7 +52,11 @@ class DrawBot:
     def draw(self,gcode):
         self.ser.flushInput()
         x = np.zeros(2)
-        self.raisepen()
+        #self.raisepen()
+        self.ser.write(str(150) + 'c')
+        self.goToPad()
+
+        self.ser.flushInput()
 
 
         #self.ser.timeout=0.5
@@ -77,7 +82,9 @@ class DrawBot:
                 print "Bird Stopped"
                 self.stop = False
                 self.ser.flushInput()
+                self.homexy()
                 return "Bird. You Stopped"
+        self.homexy()
         return "bird"
     def __del__(self):
         self.ser.close()
@@ -99,6 +106,14 @@ class DrawBot:
     def homexy(self):
         self.ser.flushInput()
         self.ser.write('z');
+        print self.ser.readline()
+        print self.ser.readline()
+    def goToPad(self):
+        self.move_to([0,1100])
+        self.move_to([815,1100])
+        self.move_to([815,665])
+        self.ser.flushInput()
+        self.homepen()
     def move(self,steps): #DO NOT USE
         self.ser.write(str(int(steps[0])) + b'a')
         self.ser.write(str(int(steps[1])) + b'b')

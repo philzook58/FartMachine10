@@ -32,6 +32,10 @@ def contour():
 def frame():
 	return app.send_static_file('frame.jpg')
 
+@app.route('/admin')
+def admin():
+	return render_template('admin.html')
+
 '''
 @app.route('/js/<path:path>')
 def send_js(path):
@@ -50,7 +54,7 @@ def draw():
 	bot.draw(request.args.get('gcode','').split('\r\n'))
 	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
-@app.route("/photo")
+@app.route("/photo") #This is pretend
 def photo():
 	photo = PhotoConverter()
 	photo.takePhoto()
@@ -59,7 +63,7 @@ def photo():
 	photo.saveContour('static/contour.jpg')
 	photo.saveFrame('static/frame.jpg')
 	photo.sortContours()
-	photo.scaleContours(1500,1100)
+	photo.scaleContours()
 	status = bot.draw(gcode)
 	if status == "busy":
 		return json.dumps({'success':False}), 200, {'ContentType':'application/json'}
@@ -71,12 +75,12 @@ def takePhoto():
 	photo = PhotoConverter()
 	photo.takePhoto()
 	global gcode
-	photo.sortContours()
-	photo.scaleContours(1500,1100)
-	gcode = photo.convertContourstoGcode().split('\r\n')
 	photo.closeCamera()
 	photo.saveContour('static/contour.jpg')
 	photo.saveFrame('static/frame.jpg')
+	photo.sortContours()
+	photo.scaleContours()
+	gcode = photo.convertContourstoGcode().split('\r\n')
 	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 @app.route("/drawphoto")

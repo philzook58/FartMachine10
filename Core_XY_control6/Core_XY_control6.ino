@@ -28,6 +28,7 @@ void setup() {
     stepper1.setMaxSpeed(100);
     stepper2.setMaxSpeed(100);
     myservo.attach(SERVOPIN);
+    myservo.write(150);
       // Then give them to MultiStepper to manage
     steppers.addStepper(stepper1);
     steppers.addStepper(stepper2);
@@ -124,6 +125,7 @@ void homeCoords() {
   }
 
   resetCoordinates();
+  Serial.println("homed");
 }
 
 void resetCoordinates() {
@@ -132,7 +134,7 @@ void resetCoordinates() {
 }
 
 void touchdown(){
-   int angle = 90;
+   int angle = 150;
     myservo.write(angle);
     delay(10);
   while(digitalRead(TOUCHDOWN_PIN) == 1 && angle > 0){
