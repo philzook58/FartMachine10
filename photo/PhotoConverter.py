@@ -32,7 +32,12 @@ class PhotoConverter:
 
     def takePhoto(self):
         #Take photo, convert to gray, downsample, threshold, find contours
-        _, frame = self.cap.read()
+        for i in range(10):
+            _, frame = self.cap.read()
+            if frame != None:
+                break  
+                
+
         self.frame = self.squareFrame(frame)
         #self.frame = frame
         gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
