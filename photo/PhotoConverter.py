@@ -20,19 +20,22 @@ class PhotoConverter:
         self.robotFraction = newfrac
 
     def squareFrame(self,frame):
+        print frame.shape
         if frame.shape[0] < frame.shape[1]:
             offset = int((frame.shape[1]-frame.shape[0])/2)
-            return frame[:,offset:frame.shape[0]-offset]
+           
+            return frame[:,offset:frame.shape[1]-offset,:]
         else:
             offset = int((frame.shape[0]-frame.shape[1])/2)
-            return frame[offset:frame.shape[1]-offset,:]
+            return frame[offset:frame.shape[0]-offset,:,:]
 
 
     def takePhoto(self):
         #Take photo, convert to gray, downsample, threshold, find contours
         _, frame = self.cap.read()
         self.frame = self.squareFrame(frame)
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        #self.frame = frame
+        gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
         #gray = self.findFace(gray)
         gray = cv2.pyrDown(gray)
 
@@ -106,7 +109,7 @@ class PhotoConverter:
                 point[1] = int((self.h-point[1]) * scale + offsety)
         self.w = w #int(self.w * scale)
         self.h = h #int(self.h * scale)
-        print self.contours
+        #print self.contours
 
     def sortContours(self):
         temp = []
