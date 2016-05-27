@@ -16,6 +16,7 @@ class DrawBot:
             self.port = serial.tools.list_ports.comports()[-1][0]
             #self.port = "/dev/ttyUSB0"
         self.ser = serial.Serial(self.port, baud,timeout=30.)  # open serial port
+        self.ser.flushInput()
         self.p = compile("G{code} X{x} Y{y}")
         print self.ser.readline()
         self.busy = False

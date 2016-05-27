@@ -10,6 +10,15 @@ from photo import PhotoConverter
 app = Flask(__name__)
 #app.debug = True
 bot = DrawBot()
+
+#!/usr/bin/env python
+import signal
+
+def signal_handler(signal, frame):
+        print('You pressed Ctrl+C!')
+        bot.ser.close()
+        sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
 #bot = False
 gcode = ""
 
